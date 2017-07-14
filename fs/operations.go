@@ -592,6 +592,18 @@ func (ds DirEntries) ForDirError(fn func(dir Directory) error) error {
 	return nil
 }
 
+// DirEntryType returns a string description of the DirEntry, either
+// "object", "directory" or "unknown type XXX"
+func DirEntryType(d DirEntry) string {
+	switch d.(type) {
+	case Object:
+		return "object"
+	case Directory:
+		return "directory"
+	}
+	return fmt.Sprintf("unknown type %T", d)
+}
+
 // ListDirSorted reads Object and *Dir into entries for the given Fs.
 //
 // dir is the start directory, "" for root
@@ -632,8 +644,14 @@ func ListDirSorted(fs Fs, includeAll bool, dir string) (entries DirEntries, err 
 		entries = newEntries
 	}
 
-	// sort the directory entries by Remote
-	sort.Sort(entries)
+	// Sort the directory entries by Remote
+	//
+	// We use a stable sort here just in case there are
+	// duplicates. Assuming the remote delivers the entries in a
+	// consistent order, this will give the best user experience
+	// in syncing as it will use the first entry for the sync
+	// comparison.
+	sort.Stable(entries)
 	return entries, nil
 }
 
