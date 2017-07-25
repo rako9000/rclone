@@ -144,5 +144,6 @@ func main() {
 	generateTestProgram(t, fns, "Sftp", "")
 	generateTestProgram(t, fns, "FTP", "")
 	generateTestProgram(t, fns, "Box", "")
+	generateTestProgram(t, fns, "AzureBlob", "")
 	log.Printf("Done")
 }
